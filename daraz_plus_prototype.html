@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daraz – Plus Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #F85606;
+    --orange-light: #FFF0E8;
+    --orange-mid: #FFD6B8;
+    --green: #0AA740;
+    --green-light: #E6F7EC;
+    --gold: #F59E0B;
+    --gold-light: #FEF3C7;
+    --dark: #1A1A2E;
+    --dark-card: #2D2D4E;
+    --gray-100: #F5F5F5;
+    --gray-200: #EBEBEB;
+    --gray-400: #AAAAAA;
+    --gray-600: #666666;
+    --gray-800: #333333;
+    --white: #FFFFFF;
+    --font: 'Nunito', sans-serif;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font);
+    background: linear-gradient(135deg, #E8E8E8 0%, #D5D5D5 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0 40px;
+  }
+
+  .phone {
+    width: 375px;
+    min-height: 812px;
+    background: var(--gray-100);
+    border-radius: 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .status-bar {
+    background: var(--dark);
+    padding: 10px 20px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 12px; color: #fff; font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons span { font-size: 11px; color: #fff; }
+
+  .nav {
+    background: var(--dark);
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .nav .back { color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+  .nav .brand { display: flex; align-items: center; gap: 8px; }
+  .nav .brand-logo {
+    background: linear-gradient(135deg, var(--orange), #D94A04);
+    color: #fff;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .nav .nav-plus-badge {
+    background: var(--gold);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: -4px;
+  }
+  .nav .page-title { color: #fff; font-size: 15px; font-weight: 700; }
+
+  .screen-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background: var(--gray-100);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(30px);
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .screen.exit-left {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin: 12px 14px;
+    padding: 16px;
+  }
+
+  .dark-card {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--dark-card) 100%);
+    border-radius: var(--radius);
+    margin: 12px 14px;
+    padding: 20px 16px;
+    color: #fff;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background 0.18s, transform 0.12s;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { background: #D94A04; }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-secondary {
+    width: 100%;
+    background: transparent;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.18s;
+    margin-top: 8px;
+  }
+  .btn-secondary:hover { background: var(--orange-light); }
+
+  .btn-ghost {
+    width: 100%;
+    background: transparent;
+    color: var(--gray-600);
+    border: none;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font);
+    text-decoration: underline;
+    margin-top: 4px;
+  }
+
+  .pb { height: 20px; }
+
+  .proto-label {
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    margin-top: 14px;
+    font-family: var(--font);
+    letter-spacing: 0.4px;
+  }
+
+  .flow-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    right: calc(50% - 245px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .flow-nav-btn {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .flow-nav-btn.active { background: var(--orange); transform: scale(1.4); }
+
+  @media (max-width: 700px) { .flow-nav { display: none; } }
+
+  /* ── Screen 1: Plus Landing ── */
+  .plus-hero {
+    text-align: center;
+    padding: 20px 14px 10px;
+    background: linear-gradient(180deg, var(--dark) 0%, var(--gray-100) 100%);
+    color: #fff;
+  }
+  .plus-hero .star { font-size: 48px; margin-bottom: 6px; }
+  .plus-hero h1 { font-size: 26px; font-weight: 800; letter-spacing: 0.5px; }
+  .plus-hero .subtitle { font-size: 14px; color: #AAB; margin-top: 4px; font-weight: 600; }
+  .plus-hero .tagline { font-size: 13px; color: var(--gold); margin-top: 10px; font-weight: 700; }
+  .plus-hero .tagline span { background: rgba(245,158,11,0.15); padding: 2px 10px; border-radius: 4px; }
+
+  .pricing-toggle {
+    display: flex;
+    background: var(--gray-200);
+    border-radius: 8px;
+    padding: 3px;
+    margin: 0 14px;
+    position: relative;
+  }
+  .pricing-toggle .pt-opt {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: var(--font);
+    border: none;
+    background: transparent;
+  }
+  .pricing-toggle .pt-opt.active {
+    background: var(--white);
+    color: var(--orange);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  }
+
+  .pricing-cards { padding: 0 14px; }
+  .pricing-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    border: 2px solid var(--gray-200);
+    transition: all 0.25s;
+    margin-top: 10px;
+  }
+  .pricing-card.featured {
+    border-color: var(--orange);
+    background: linear-gradient(135deg, #FFF8F5, #FFF0E8);
+  }
+  .pricing-card .plan-name { font-size: 14px; color: var(--gray-600); font-weight: 700; }
+  .pricing-card .plan-price { font-size: 28px; font-weight: 800; color: var(--gray-800); margin: 4px 0; }
+  .pricing-card .plan-price .per { font-size: 14px; font-weight: 600; color: var(--gray-400); }
+  .pricing-card .plan-save { font-size: 12px; color: var(--green); font-weight: 700; margin-bottom: 8px; }
+  .pricing-card .plan-features { list-style: none; padding: 0; margin: 8px 0; }
+  .pricing-card .plan-features li {
+    font-size: 12.5px; color: var(--gray-600); margin: 6px 0;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .pricing-card .plan-features li .check { color: var(--green); font-weight: 800; }
+
+  .plus-features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .pf-item {
+    background: var(--gray-100);
+    border-radius: 8px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .pf-item .icon { font-size: 24px; margin-bottom: 4px; }
+  .pf-item .label { font-size: 11px; font-weight: 700; color: var(--gray-800); line-height: 1.3; }
+
+  /* ── Screen 2: Trial Activated ── */
+  .trial-hero {
+    text-align: center;
+    padding: 28px 16px 14px;
+  }
+  .trial-hero .big-icon { font-size: 56px; margin-bottom: 10px; }
+  .trial-hero h2 { font-size: 20px; font-weight: 800; color: var(--gray-800); }
+  .trial-hero p { font-size: 13px; color: var(--gray-600); margin-top: 6px; line-height: 1.5; }
+
+  .trial-badge {
+    background: linear-gradient(135deg, var(--gold-light), #FFE8B0);
+    border: 1.5px solid var(--gold);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .trial-badge .icon { font-size: 28px; flex-shrink: 0; }
+  .trial-badge .text .title { font-size: 14px; font-weight: 800; color: #92400E; }
+  .trial-badge .text .sub { font-size: 12px; color: #A0620E; margin-top: 2px; }
+
+  /* ── Screen 3: Dashboard ── */
+  .dash-header {
+    background: linear-gradient(135deg, var(--dark) 0%, #2D2D4E 100%);
+    padding: 20px 16px;
+    color: #fff;
+  }
+  .dash-header .greeting { font-size: 13px; color: #AAB; }
+  .dash-header .user-name { font-size: 18px; font-weight: 800; margin: 2px 0; }
+  .dash-header .member-since { font-size: 11px; color: #889; }
+
+  .savings-card {
+    background: linear-gradient(135deg, var(--green-light) 0%, #D4F5DF 100%);
+    border: 1.5px solid var(--green);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 12px 14px;
+  }
+  .savings-card .amount { font-size: 28px; font-weight: 800; color: var(--green); }
+  .savings-card .label { font-size: 12px; color: var(--gray-600); }
+  .savings-card .label strong { color: var(--gray-800); }
+
+  .streak-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 14px 16px;
+    margin: 12px 14px;
+  }
+  .streak-bar .fire { font-size: 28px; }
+  .streak-bar .info .days { font-size: 18px; font-weight: 800; color: var(--orange); }
+  .streak-bar .info .label { font-size: 12px; color: var(--gray-600); }
+  .streak-bar .bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .streak-bar .bar-track .fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--gold)); border-radius: 3px; }
+
+  .dash-deals-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 14px 8px;
+    scrollbar-width: none;
+  }
+  .dash-deals-scroll::-webkit-scrollbar { display: none; }
+  .dash-deal-card {
+    min-width: 130px;
+    max-width: 130px;
+    background: var(--white);
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    padding: 10px;
+    flex-shrink: 0;
+  }
+  .dash-deal-card .img { font-size: 28px; text-align: center; padding: 6px 0; }
+  .dash-deal-card .name { font-size: 11px; font-weight: 700; color: var(--gray-800); }
+  .dash-deal-card .price { font-size: 13px; font-weight: 800; color: var(--orange); margin-top: 3px; }
+  .dash-deal-card .old-price { font-size: 10px; color: var(--gray-400); text-decoration: line-through; }
+
+  /* ── Screen 4: Member Deals ── */
+  .deals-header {
+    background: linear-gradient(135deg, var(--dark) 0%, #2D2D4E 100%);
+    padding: 20px 16px;
+    text-align: center;
+    color: #fff;
+  }
+  .deals-header h2 { font-size: 18px; font-weight: 800; }
+  .deals-header p { font-size: 12px; color: #AAB; margin-top: 4px; }
+  .deals-header .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .deals-header .countdown .unit { text-align: center; }
+  .deals-header .countdown .unit .num {
+    background: rgba(255,255,255,0.1);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 800;
+    min-width: 36px;
+    display: inline-block;
+  }
+  .deals-header .countdown .unit .label { font-size: 10px; color: #889; margin-top: 2px; }
+
+  .deal-product {
+    display: flex;
+    gap: 12px;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 12px;
+    margin: 8px 14px;
+    align-items: center;
+  }
+  .deal-product .dp-img { font-size: 36px; flex-shrink: 0; width: 60px; text-align: center; }
+  .deal-product .dp-info { flex: 1; }
+  .deal-product .dp-info .name { font-size: 13px; font-weight: 700; color: var(--gray-800); }
+  .deal-product .dp-info .desc { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+  .deal-product .dp-info .price-row { margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .deal-product .dp-info .price-row .now { font-size: 15px; font-weight: 800; color: var(--orange); }
+  .deal-product .dp-info .price-row .was { font-size: 11px; color: var(--gray-400); text-decoration: line-through; }
+  .deal-product .dp-info .price-row .disc { font-size: 10px; font-weight: 800; color: var(--green); background: var(--green-light); padding: 1px 5px; border-radius: 3px; }
+  .deal-product .dp-cta {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: var(--font);
+    flex-shrink: 0;
+  }
+
+  /* ── Screen 5: Benefits & Perks ── */
+  .perks-header {
+    text-align: center;
+    padding: 18px 14px 8px;
+  }
+  .perks-header h2 { font-size: 18px; font-weight: 800; color: var(--gray-800); }
+  .perks-header p { font-size: 13px; color: var(--gray-600); margin-top: 4px; }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+  .compare-table th {
+    text-align: center;
+    padding: 8px 6px;
+    font-weight: 800;
+    font-size: 11px;
+    background: var(--gray-100);
+    border-bottom: 2px solid var(--gray-200);
+  }
+  .compare-table th:first-child { text-align: left; }
+  .compare-table th.plus-col { color: var(--orange); }
+  .compare-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid var(--gray-200);
+    text-align: center;
+    color: var(--gray-600);
+  }
+  .compare-table td:first-child { text-align: left; font-weight: 700; color: var(--gray-800); }
+  .compare-table td .yes { color: var(--green); font-weight: 800; }
+  .compare-table td .no { color: var(--gray-400); }
+  .compare-table tr:last-child td { border-bottom: none; }
+
+  .perk-card {
+    display: flex;
+    gap: 12px;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 14px;
+    margin: 8px 14px;
+    align-items: center;
+  }
+  .perk-card .icon { font-size: 28px; flex-shrink: 0; }
+  .perk-card .info { flex: 1; }
+  .perk-card .info .title { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+  .perk-card .info .desc { font-size: 12px; color: var(--gray-600); margin-top: 2px; line-height: 1.4; }
+
+  .referral-card {
+    background: linear-gradient(135deg, var(--orange-light), #FFE0C8);
+    border: 1.5px solid var(--orange-mid);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 12px 14px;
+    text-align: center;
+  }
+  .referral-card .title { font-size: 14px; font-weight: 800; color: var(--orange); }
+  .referral-card .sub { font-size: 12px; color: var(--gray-600); margin: 4px 0 10px; }
+  .referral-card .code {
+    display: inline-block;
+    background: #fff;
+    border: 2px dashed var(--orange);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--gray-800);
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <span>●●●</span>
+      <span>WiFi</span>
+      <span>🔋</span>
+    </div>
+  </div>
+
+  <div class="nav">
+    <span class="back" onclick="goBack()">&#8592;</span>
+    <div class="brand">
+      <span class="brand-logo">daraz</span>
+      <span class="nav-plus-badge">PLUS</span>
+      <span class="page-title" id="nav-title">Daraz Plus</span>
+    </div>
+  </div>
+
+  <div class="step-bar" id="step-bar" style="display:flex;padding:8px 14px 2px;gap:6px;">
+    <div class="step-dot" id="dot-1" style="flex:1;height:4px;border-radius:2px;background:var(--gray-200);transition:background 0.3s;"></div>
+    <div class="step-dot" id="dot-2" style="flex:1;height:4px;border-radius:2px;background:var(--gray-200);transition:background 0.3s;"></div>
+    <div class="step-dot" id="dot-3" style="flex:1;height:4px;border-radius:2px;background:var(--gray-200);transition:background 0.3s;"></div>
+    <div class="step-dot" id="dot-4" style="flex:1;height:4px;border-radius:2px;background:var(--gray-200);transition:background 0.3s;"></div>
+    <div class="step-dot" id="dot-5" style="flex:1;height:4px;border-radius:2px;background:var(--gray-200);transition:background 0.3s;"></div>
+  </div>
+
+  <div class="screen-wrap">
+
+    <!-- SCREEN 1: Plus Landing -->
+    <div class="screen active" id="screen-1">
+      <div class="plus-hero">
+        <div class="star">⭐</div>
+        <h1>Daraz Plus</h1>
+        <div class="subtitle">Your smartest shopping upgrade</div>
+        <div class="tagline"><span>🎉 First 30 days free</span></div>
+      </div>
+
+      <div class="card" style="margin-top:0;">
+        <div style="font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">Choose your plan</div>
+
+        <div class="pricing-toggle" id="pricing-toggle">
+          <button class="pt-opt active" onclick="setPricing('monthly')">Monthly</button>
+          <button class="pt-opt" onclick="setPricing('yearly')">Yearly <span style="font-size:10px;color:var(--green);font-weight:800;">Save 15%</span></button>
+        </div>
+
+        <div class="pricing-cards" style="padding:0;">
+          <div class="pricing-card featured" id="plan-card">
+            <div class="plan-name" id="plan-name">Daraz Plus Monthly</div>
+            <div class="plan-price" id="plan-price">৳ 99 <span class="per">/month</span></div>
+            <div class="plan-save" id="plan-save">&#xf0e7; Cancel anytime</div>
+            <ul class="plan-features">
+              <li><span class="check">✓</span> Free delivery on every order</li>
+              <li><span class="check">✓</span> 21-day hassle-free returns</li>
+              <li><span class="check">✓</span> Priority customer support (&lt; 2hr)</li>
+              <li><span class="check">✓</span> Exclusive member-only deals</li>
+            </ul>
+            <button class="btn-primary" onclick="goTo(2)">Start Free Trial →</button>
+            <button class="btn-ghost" onclick="showToast('📱 Learn more about Daraz Plus')">Learn more</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:10px;">What you get</div>
+        <div class="plus-features-grid">
+          <div class="pf-item"><div class="icon">🚚</div><div class="label">Free Delivery</div></div>
+          <div class="pf-item"><div class="icon">↩️</div><div class="label">21-Day Returns</div></div>
+          <div class="pf-item"><div class="icon">🎧</div><div class="label">Priority Support</div></div>
+          <div class="pf-item"><div class="icon">🏷️</div><div class="label">Member Deals</div></div>
+        </div>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- SCREEN 2: Trial Activated -->
+    <div class="screen" id="screen-2">
+      <div class="trial-hero">
+        <div class="big-icon">🎉</div>
+        <h2>Welcome to Daraz Plus!</h2>
+        <p>Your 30-day free trial has started. Enjoy all Plus benefits — no charge for the next 30 days.</p>
+      </div>
+
+      <div class="card">
+        <div class="trial-badge">
+          <div class="icon">📅</div>
+          <div class="text">
+            <div class="title">Trial ends June 25, 2026</div>
+            <div class="sub">After trial: ৳99/month. Cancel anytime before trial ends.</div>
+          </div>
+        </div>
+
+        <div style="margin:14px 0 6px;display:flex;gap:10px;">
+          <div style="flex:1;background:var(--gray-100);border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:20px;">🚚</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray-800);margin-top:4px;">Free Delivery</div>
+          </div>
+          <div style="flex:1;background:var(--gray-100);border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:20px;">↩️</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray-800);margin-top:4px;">21-Day Returns</div>
+          </div>
+          <div style="flex:1;background:var(--gray-100);border-radius:8px;padding:10px;text-align:center;">
+            <div style="font-size:20px;">🎧</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray-800);margin-top:4px;">Priority Support</div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="goTo(3)">Explore Plus Dashboard →</button>
+        <button class="btn-ghost" onclick="goTo(1)">← Back to plans</button>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- SCREEN 3: Plus Dashboard -->
+    <div class="screen" id="screen-3">
+      <div class="dash-header">
+        <div class="greeting">Welcome back,</div>
+        <div class="user-name">Rafiq 👋</div>
+        <div class="member-since">Daraz Plus member since May 2026</div>
+      </div>
+
+      <div class="savings-card">
+        <div class="amount">৳ 340</div>
+        <div class="label">Total savings this month<br><strong>Free delivery on 4 orders + member deal discounts</strong></div>
+      </div>
+
+      <div class="streak-bar">
+        <div class="fire">🔥</div>
+        <div class="info">
+          <div class="days">12-Month streak</div>
+          <div class="label">Orders in consecutive months</div>
+        </div>
+        <div style="flex:1;text-align:right;">
+          <div class="bar-track" style="width:100%;">
+            <div class="fill" style="width:40%;"></div>
+          </div>
+          <div style="font-size:10px;color:var(--gray-400);margin-top:2px;">4/10 — Silver tier</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:13px;font-weight:700;color:var(--gray-800);">🔥 Member Deals</div>
+          <span style="font-size:11px;color:var(--orange);font-weight:700;cursor:pointer;" onclick="goTo(4)">See all →</span>
+        </div>
+        <div class="dash-deals-scroll" style="padding:0;">
+          <div class="dash-deal-card">
+            <div class="img">🎒</div>
+            <div class="name">Sports Backpack</div>
+            <div class="price">৳ 899</div>
+            <div class="old-price">৳ 1,299</div>
+          </div>
+          <div class="dash-deal-card">
+            <div class="img">🔌</div>
+            <div class="name">65W Fast Charger</div>
+            <div class="price">৳ 320</div>
+            <div class="old-price">৳ 580</div>
+          </div>
+          <div class="dash-deal-card">
+            <div class="img">👟</div>
+            <div class="name">Running Shoes</div>
+            <div class="price">৳ 1,499</div>
+            <div class="old-price">৳ 2,199</div>
+          </div>
+          <div class="dash-deal-card">
+            <div class="img">⌚</div>
+            <div class="name">Smart Band Pro</div>
+            <div class="price">৳ 890</div>
+            <div class="old-price">৳ 1,450</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-secondary" style="margin:4px 14px;" onclick="goTo(5)">See All Benefits →</button>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- SCREEN 4: Member Deals -->
+    <div class="screen" id="screen-4">
+      <div class="deals-header">
+        <h2>⭐ Member-Only Deals</h2>
+        <p>Exclusive discounts for Daraz Plus members</p>
+        <div class="countdown" id="countdown">
+          <div class="unit"><div class="num" id="cd-h">23</div><div class="label">Hours</div></div>
+          <div class="unit"><div class="num" id="cd-m">59</div><div class="label">Mins</div></div>
+          <div class="unit"><div class="num" id="cd-s">42</div><div class="label">Secs</div></div>
+        </div>
+      </div>
+
+      <div class="deal-product">
+        <div class="dp-img">🎒</div>
+        <div class="dp-info">
+          <div class="name">Sports Backpack Pro 35L</div>
+          <div class="desc">Waterproof · Laptop compartment</div>
+          <div class="price-row">
+            <span class="now">৳ 899</span>
+            <span class="was">৳ 1,299</span>
+            <span class="disc">-31%</span>
+          </div>
+        </div>
+        <button class="dp-cta" onclick="showToast('✅ Added Sports Backpack to cart')">Grab</button>
+      </div>
+
+      <div class="deal-product">
+        <div class="dp-img">🔌</div>
+        <div class="dp-info">
+          <div class="name">GaN 65W Fast Charger</div>
+          <div class="desc">USB-C · Laptop & phone compatible</div>
+          <div class="price-row">
+            <span class="now">৳ 320</span>
+            <span class="was">৳ 580</span>
+            <span class="disc">-45%</span>
+          </div>
+        </div>
+        <button class="dp-cta" onclick="showToast('✅ Added Fast Charger to cart')">Grab</button>
+      </div>
+
+      <div class="deal-product">
+        <div class="dp-img">👟</div>
+        <div class="dp-info">
+          <div class="name">Air Running Shoes — Size 42</div>
+          <div class="desc">Breathable mesh · Cushion sole</div>
+          <div class="price-row">
+            <span class="now">৳ 1,499</span>
+            <span class="was">৳ 2,199</span>
+            <span class="disc">-32%</span>
+          </div>
+        </div>
+        <button class="dp-cta" onclick="showToast('✅ Added Running Shoes to cart')">Grab</button>
+      </div>
+
+      <div class="deal-product">
+        <div class="dp-img">⌚</div>
+        <div class="dp-info">
+          <div class="name">Smart Band Pro</div>
+          <div class="desc">Heart rate · SpO2 · 14-day battery</div>
+          <div class="price-row">
+            <span class="now">৳ 890</span>
+            <span class="was">৳ 1,450</span>
+            <span class="disc">-39%</span>
+          </div>
+        </div>
+        <button class="dp-cta" onclick="showToast('✅ Added Smart Band to cart')">Grab</button>
+      </div>
+
+      <div class="deal-product">
+        <div class="dp-img">🧴</div>
+        <div class="dp-info">
+          <div class="name">Premium Skincare Set</div>
+          <div class="desc">Vitamin C serum + Moisturizer</div>
+          <div class="price-row">
+            <span class="now">৳ 649</span>
+            <span class="was">৳ 999</span>
+            <span class="disc">-35%</span>
+          </div>
+        </div>
+        <button class="dp-cta" onclick="showToast('✅ Added Skincare Set to cart')">Grab</button>
+      </div>
+
+      <button class="btn-ghost" onclick="goTo(3)">← Back to Dashboard</button>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- SCREEN 5: Benefits & Perks -->
+    <div class="screen" id="screen-5">
+      <div class="perks-header">
+        <h2>⭐ All Plus Benefits</h2>
+        <p>Everything you get with Daraz Plus</p>
+      </div>
+
+      <div class="card" style="padding:12px 14px;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Free</th>
+              <th class="plus-col">Plus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Delivery Fee</td>
+              <td><span class="no">Standard rate</span></td>
+              <td><span class="yes">Free</span></td>
+            </tr>
+            <tr>
+              <td>Return Window</td>
+              <td>14 days</td>
+              <td><span class="yes">21 days</span></td>
+            </tr>
+            <tr>
+              <td>Customer Support</td>
+              <td>Standard queue</td>
+              <td><span class="yes">Priority (&lt;2hr)</span></td>
+            </tr>
+            <tr>
+              <td>Member Deals</td>
+              <td><span class="no">None</span></td>
+              <td><span class="yes">Weekly exclusives</span></td>
+            </tr>
+            <tr>
+              <td>Plus Badge</td>
+              <td><span class="no">—</span></td>
+              <td><span class="yes">Profile badge</span></td>
+            </tr>
+            <tr>
+              <td>Personalisation</td>
+              <td>Standard</td>
+              <td><span class="yes">Enhanced</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="perk-card">
+        <div class="icon">🚚</div>
+        <div class="info">
+          <div class="title">Free Delivery</div>
+          <div class="desc">Unlimited free delivery on every order. No minimum purchase required. Save ৳40–60 per order.</div>
+        </div>
+      </div>
+
+      <div class="perk-card">
+        <div class="icon">↩️</div>
+        <div class="info">
+          <div class="title">21-Day Hassle-Free Returns</div>
+          <div class="desc">Extended return window from 14 to 21 days. Easy pickup from your doorstep. No questions asked.</div>
+        </div>
+      </div>
+
+      <div class="perk-card">
+        <div class="icon">🎧</div>
+        <div class="info">
+          <div class="title">Priority Customer Support</div>
+          <div class="desc">Get connected to a senior agent within 2 hours. Dedicated line for Plus members. No waiting in queues.</div>
+        </div>
+      </div>
+
+      <div class="perk-card">
+        <div class="icon">🏷️</div>
+        <div class="info">
+          <div class="title">Exclusive Member Deals</div>
+          <div class="desc">Weekly flash sales with 30–50% off. Early access to 11.11 and Eid sales. First dibs on limited stock.</div>
+        </div>
+      </div>
+
+      <div class="perk-card">
+        <div class="icon">⭐</div>
+        <div class="info">
+          <div class="title">Plus Profile Badge</div>
+          <div class="desc">Show off your Plus status with a verified gold badge on your profile and reviews.</div>
+        </div>
+      </div>
+
+      <div class="referral-card">
+        <div class="title">👥 Refer a Friend</div>
+        <div class="sub">Give your friend 30 days free Plus. You get ৳50 credit when they subscribe.</div>
+        <div class="code">RAFIQ50</div>
+      </div>
+
+      <div style="text-align:center;padding:0 14px;">
+        <button class="btn-primary" onclick="goTo(3)">Back to Dashboard →</button>
+        <button class="btn-ghost" onclick="showToast('📞 Contact Plus Support')">Need help?</button>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="proto-label">
+  Daraz Plus Prototype · Daraz Case Study 2026 · 5 Screens
+</div>
+
+<nav class="flow-nav" id="flow-nav">
+  <button class="flow-nav-btn active" id="nav-1" title="Landing" onclick="goTo(1)"></button>
+  <button class="flow-nav-btn" id="nav-2" title="Trial" onclick="goTo(2)"></button>
+  <button class="flow-nav-btn" id="nav-3" title="Dashboard" onclick="goTo(3)"></button>
+  <button class="flow-nav-btn" id="nav-4" title="Deals" onclick="goTo(4)"></button>
+  <button class="flow-nav-btn" id="nav-5" title="Perks" onclick="goTo(5)"></button>
+</nav>
+
+<script>
+  let currentScreen = '1';
+  let isMonthly = true;
+  const screenHistory = [];
+
+  function goTo(id) {
+    const idStr = String(id);
+    const curr = document.getElementById('screen-' + currentScreen);
+    if (curr) {
+      curr.classList.remove('active');
+      curr.classList.add('exit-left');
+      setTimeout(() => curr.classList.remove('exit-left'), 350);
+    }
+    const next = document.getElementById('screen-' + idStr);
+    if (next) next.classList.add('active');
+    screenHistory.push(currentScreen);
+    currentScreen = idStr;
+    updateNav(idStr);
+  }
+
+  function goBack() {
+    if (screenHistory.length === 0) return;
+    const prev = screenHistory.pop();
+    const curr = document.getElementById('screen-' + currentScreen);
+    if (curr) {
+      curr.classList.remove('active');
+      setTimeout(() => curr.classList.remove('exit-left'), 350);
+    }
+    const prevEl = document.getElementById('screen-' + prev);
+    if (prevEl) prevEl.classList.add('active');
+    currentScreen = prev;
+    updateNav(prev);
+  }
+
+  function updateNav(id) {
+    const titles = {
+      '1': 'Daraz Plus',
+      '2': 'Trial Started',
+      '3': 'Plus Dashboard',
+      '4': 'Member Deals',
+      '5': 'All Benefits'
+    };
+    document.getElementById('nav-title').textContent = titles[id] || 'Daraz Plus';
+
+    const steps = { '1': 1, '2': 2, '3': 3, '4': 3, '5': 3 };
+    const step = steps[id] || 1;
+    for (let i = 1; i <= 5; i++) {
+      const el = document.getElementById('dot-' + i);
+      if (el) el.style.background = i <= step ? 'var(--orange)' : 'var(--gray-200)';
+    }
+
+    const navIds = ['1','2','3','4','5'];
+    navIds.forEach(nid => {
+      const el = document.getElementById('nav-' + nid);
+      if (el) el.classList.toggle('active', nid === id);
+    });
+  }
+
+  function setPricing(plan) {
+    isMonthly = plan === 'monthly';
+    document.querySelectorAll('.pt-opt').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.pt-opt').forEach(b => {
+      if ((plan === 'monthly' && b.textContent.includes('Monthly')) ||
+          (plan === 'yearly' && b.textContent.includes('Yearly'))) {
+        b.classList.add('active');
+      }
+    });
+
+    const nameEl = document.getElementById('plan-name');
+    const priceEl = document.getElementById('plan-price');
+    const saveEl = document.getElementById('plan-save');
+
+    if (plan === 'yearly') {
+      nameEl.textContent = 'Daraz Plus Annual';
+      priceEl.innerHTML = '৳ 999 <span class="per">/year</span>';
+      saveEl.innerHTML = '🎉 Save ৳189 vs monthly';
+    } else {
+      nameEl.textContent = 'Daraz Plus Monthly';
+      priceEl.innerHTML = '৳ 99 <span class="per">/month</span>';
+      saveEl.textContent = 'Cancel anytime';
+    }
+  }
+
+  // Countdown timer
+  let cdInterval;
+  function startCountdown() {
+    let secs = 23 * 3600 + 59 * 60 + 42;
+    if (cdInterval) clearInterval(cdInterval);
+    cdInterval = setInterval(() => {
+      secs--;
+      if (secs <= 0) secs = 24 * 3600;
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      const s = secs % 60;
+      document.getElementById('cd-h').textContent = String(h).padStart(2, '0');
+      document.getElementById('cd-m').textContent = String(m).padStart(2, '0');
+      document.getElementById('cd-s').textContent = String(s).padStart(2, '0');
+    }, 1000);
+  }
+
+  // Start countdown when deals screen opens
+  const _origGoTo = goTo;
+  window.goTo = function(id) {
+    if (String(id) === '4') startCountdown();
+    _origGoTo(id);
+  };
+
+  function showToast(msg) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    Object.assign(t.style, {
+      position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%) translateY(80px)',
+      background: 'var(--gray-800)', color: '#fff', padding: '12px 24px', borderRadius: '8px',
+      fontSize: '14px', fontWeight: '600', fontFamily: 'var(--font)', opacity: '0',
+      transition: 'all 0.35s ease', zIndex: '100', pointerEvents: 'none'
+    });
+    document.body.appendChild(t);
+    requestAnimationFrame(() => {
+      t.style.opacity = '1';
+      t.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(-50%) translateY(80px)';
+      setTimeout(() => t.remove(), 400);
+    }, 2000);
+  }
+
+  updateNav('1');
+</script>
+</body>
+</html>

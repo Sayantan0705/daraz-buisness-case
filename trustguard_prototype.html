@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daraz – TrustGuard Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #F85606;
+    --orange-light: #FFF0E8;
+    --orange-mid: #FFD6B8;
+    --green: #0AA740;
+    --green-light: #E6F7EC;
+    --gray-100: #F5F5F5;
+    --gray-200: #EBEBEB;
+    --gray-400: #AAAAAA;
+    --gray-600: #666666;
+    --gray-800: #333333;
+    --white: #FFFFFF;
+    --font: 'Nunito', sans-serif;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: linear-gradient(135deg, #E8E8E8 0%, #D5D5D5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 30px;
+  }
+
+  .presentation {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+  }
+
+  .phone-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .phone {
+    width: 375px;
+    min-height: 780px;
+    background: var(--gray-100);
+    border-radius: 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .status-bar {
+    background: var(--orange);
+    padding: 10px 20px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 12px; color: #fff; font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons span { font-size: 11px; color: #fff; }
+
+  .nav {
+    background: var(--orange);
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .nav .back { color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+  .nav .brand { display: flex; align-items: center; gap: 8px; }
+  .nav .brand-logo {
+    background: #fff; color: var(--orange); font-weight: 800; font-size: 15px;
+    padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;
+  }
+  .nav .page-title { color: #fff; font-size: 15px; font-weight: 700; }
+
+  .screen-wrap {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .screen {
+    min-height: 100%;
+    background: var(--gray-100);
+  }
+
+  .banner-img {
+    width: 100%;
+    height: 200px;
+    background: var(--gray-100);
+    overflow: hidden;
+  }
+  .banner-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin: 0 14px 12px;
+    padding: 16px;
+  }
+
+  .product-title { font-size: 16px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+  .product-price { font-size: 20px; font-weight: 800; color: var(--orange); margin: 6px 0; }
+  .product-sold-by { font-size: 13px; color: var(--gray-600); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+
+  .trust-badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .trust-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green-light); border-radius: 6px; padding: 5px 9px;
+    font-size: 12px; font-weight: 700; color: var(--green);
+  }
+
+  .quality-score {
+    display: flex; align-items: center; gap: 8px; margin: 10px 0;
+  }
+  .quality-score .label { font-size: 12px; color: var(--gray-600); white-space: nowrap; }
+  .quality-score .value {
+    font-size: 16px; font-weight: 800; color: var(--orange); min-width: 32px; text-align: center;
+  }
+  .quality-score .bar {
+    flex: 1; height: 5px; background: var(--gray-200); border-radius: 3px; overflow: hidden;
+  }
+  .quality-score .bar-fill { height: 100%; background: var(--orange); border-radius: 3px; }
+
+  .accuracy-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 6px;
+    padding: 5px 9px; font-size: 12px; color: var(--gray-600);
+  }
+
+  .seller-card {
+    background: var(--gray-100); border-radius: var(--radius); padding: 14px; margin-top: 12px;
+  }
+  .seller-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .seller-header .seller-icon {
+    width: 34px; height: 34px; background: var(--gray-200); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .seller-header .seller-name { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+  .seller-header .verified-tag {
+    background: var(--green); color: #fff; font-size: 10px; font-weight: 800;
+    padding: 2px 7px; border-radius: 3px; margin-left: auto;
+  }
+  .seller-stats { display: flex; gap: 20px; font-size: 12px; color: var(--gray-600); }
+  .seller-stats .stat { display: flex; flex-direction: column; align-items: center; }
+  .seller-stats .stat .value { font-weight: 800; color: var(--gray-800); font-size: 14px; }
+
+  .btn-primary {
+    width: 100%; background: var(--orange); color: #fff; border: none; border-radius: 8px;
+    padding: 14px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: var(--font);
+    transition: background 0.18s, transform 0.12s; margin-top: 8px;
+  }
+  .btn-primary:hover { background: #D94A04; }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-secondary {
+    width: 100%; background: transparent; color: var(--orange);
+    border: 2px solid var(--orange); border-radius: 8px; padding: 12px;
+    font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font);
+    transition: all 0.18s; margin-top: 8px;
+  }
+  .btn-secondary:hover { background: var(--orange-light); }
+
+  .pb { height: 20px; }
+
+  /* ── Feature Markers (positioned by JS) ── */
+  .fm {
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(248,86,6,0.3);
+    border: 3px solid #fff;
+    z-index: 10;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    pointer-events: auto;
+  }
+  .fm:hover { transform: scale(1.2) !important; box-shadow: 0 4px 20px rgba(248,86,6,0.5); z-index: 11; }
+  .fm.active {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 6px rgba(248,86,6,0.25), 0 4px 24px rgba(248,86,6,0.5);
+    background: #D94A04;
+    z-index: 12;
+  }
+  .fm::after {
+    content: attr(data-label);
+    position: absolute;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--orange);
+    background: #fff;
+    padding: 3px 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .fm.fm-r::after { right: 42px; top: 50%; transform: translateY(-50%); }
+  .fm.fm-l::after { left: 42px; top: 50%; transform: translateY(-50%); }
+  .fm:hover::after { opacity: 1; }
+  .fm.active::after { opacity: 1; }
+
+  .fm-r { right: -17px; }
+  .fm-l { left: -17px; }
+
+  /* ── Annotation Panel ── */
+  .annotation-panel {
+    position: relative;
+    padding: 20px 0 20px 50px;
+    min-height: 740px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .annotation-panel::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 30px;
+    bottom: 30px;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--orange), var(--orange-mid));
+    border-radius: 2px;
+  }
+
+  .annotation-item {
+    position: relative;
+    padding: 8px 0 8px 0;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-bottom: 5px;
+  }
+  .annotation-item:hover { transform: translateX(4px); }
+
+  .annotation-item::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px var(--gray-400);
+    transform: translateY(-50%);
+    z-index: 2;
+    transition: all 0.3s;
+  }
+  .annotation-item.active::before {
+    background: var(--orange);
+    box-shadow: 0 0 0 4px rgba(248,86,6,0.3), 0 0 0 2px var(--orange);
+  }
+
+  .annotation-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--gray-200);
+    transition: all 0.3s;
+    max-width: 340px;
+  }
+  .annotation-item.active .annotation-card {
+    border-left-color: var(--orange);
+    box-shadow: 0 4px 20px rgba(248,86,6,0.12);
+    background: var(--orange-light);
+  }
+  .annotation-card h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 3px;
+    transition: color 0.3s;
+  }
+  .annotation-item.active .annotation-card h4 { color: var(--orange); }
+  .annotation-card p {
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .annotation-card .tag {
+    display: inline-block;
+    background: var(--gray-200);
+    color: var(--gray-600);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    transition: all 0.3s;
+  }
+  .annotation-item.active .annotation-card .tag {
+    background: var(--orange);
+    color: #fff;
+  }
+
+  /* ── Prototype label ── */
+  .proto-label {
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    margin-top: 10px;
+    font-family: var(--font);
+    letter-spacing: 0.4px;
+  }
+
+  /* ── Toast notification ── */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--gray-800);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font);
+    opacity: 0;
+    transition: all 0.35s ease;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (max-width: 900px) {
+    .presentation { flex-direction: column; align-items: center; }
+    .annotation-panel { padding-left: 30px; min-height: auto; }
+    .annotation-panel::before { display: none; }
+    .fm { display: none; }
+    .annotation-item::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="presentation">
+
+  <!-- PHONE -->
+  <div class="phone-wrapper" id="phone-wrapper">
+    <div class="phone">
+      <div class="status-bar">
+        <span class="time">10:15</span>
+        <div class="icons">
+          <span>●●●</span>
+          <span>WiFi</span>
+          <span>🔋</span>
+        </div>
+      </div>
+      <div class="nav">
+        <span class="back" onclick="showToast('Navigating back...')">&#8592;</span>
+        <div class="brand">
+          <span class="brand-logo">daraz</span>
+          <span class="page-title">Product Detail</span>
+        </div>
+      </div>
+      <div class="screen-wrap" id="screen-wrap">
+        <div class="screen">
+          <div class="banner-img">
+            <img src="https://images.unsplash.com/photo-1523206489230-c012c64b2b48" alt="Smartphone">
+          </div>
+          <div class="card" style="margin-top: 12px;">
+            <div id="feat-product">
+              <div class="product-title">Samsung Galaxy A54 5G</div>
+              <div class="product-price">৳ 32,990</div>
+            </div>
+            <div class="product-sold-by">
+              <span>Sold by: TechHub Official</span>
+            </div>
+
+            <div class="trust-badges">
+              <span id="feat-trust" class="trust-badge">🛡️ TrustGuard Protected</span>
+              <span id="feat-24hr" class="trust-badge">✓ 24-hr Refund Guarantee</span>
+            </div>
+
+            <div id="feat-quality" class="quality-score">
+              <span class="label">Seller Quality Score</span>
+              <span class="value">4.8</span>
+              <div class="bar"><div class="bar-fill" style="width: 96%;"></div></div>
+            </div>
+
+            <div style="margin-top: 8px;">
+              <span id="feat-accuracy" class="accuracy-badge">🔍 Listing Accuracy: High</span>
+            </div>
+
+            <div id="feat-seller" class="seller-card">
+              <div class="seller-header">
+                <div class="seller-icon">🏪</div>
+                <div class="seller-name">TechHub Official</div>
+                <div class="verified-tag">Verified</div>
+              </div>
+              <div class="seller-stats">
+                <div class="stat">
+                  <div class="value">98%</div>
+                  <div class="label">Positive Feedback</div>
+                </div>
+                <div class="stat">
+                  <div class="value">12k+</div>
+                  <div class="label">Items Sold</div>
+                </div>
+                <div class="stat">
+                  <div class="value">2.4h</div>
+                  <div class="label">Avg Response</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="feat-buttons">
+              <button class="btn-primary" onclick="showToast('✅ Added to cart!')">Add to Cart</button>
+              <button class="btn-secondary" onclick="showToast('🏪 Opening TechHub Official Store...')">Visit Store</button>
+            </div>
+          </div>
+          <div class="pb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature markers → positioned by JS -->
+    <div id="marker-1" class="fm fm-r" data-label="TrustGuard Badge" data-feat="feat-trust" data-anno="anno-1">1</div>
+    <div id="marker-2" class="fm fm-r" data-label="24-hr Guarantee" data-feat="feat-24hr" data-anno="anno-2">2</div>
+    <div id="marker-3" class="fm fm-l" data-label="Quality Score" data-feat="feat-quality" data-anno="anno-3">3</div>
+    <div id="marker-4" class="fm fm-r" data-label="Listing Accuracy" data-feat="feat-accuracy" data-anno="anno-4">4</div>
+    <div id="marker-5" class="fm fm-l" data-label="Seller Info" data-feat="feat-seller" data-anno="anno-5">5</div>
+    <div id="marker-6" class="fm fm-l" data-label="Product Details" data-feat="feat-product" data-anno="anno-6">6</div>
+    <div id="marker-7" class="fm fm-r" data-label="Action Buttons" data-feat="feat-buttons" data-anno="anno-7">7</div>
+  </div>
+
+  <!-- ANNOTATION PANEL -->
+  <div class="annotation-panel" id="annotation-panel">
+
+    <div id="anno-1" class="annotation-item" data-marker="marker-1" data-feat="feat-trust">
+      <div class="annotation-card">
+        <span class="tag">01</span>
+        <h4>TrustGuard Protected Badge</h4>
+        <p>Highlights buyer protection eligibility on every product page. Green badge builds confidence and reduces purchase anxiety.</p>
+      </div>
+    </div>
+
+    <div id="anno-2" class="annotation-item" data-marker="marker-2" data-feat="feat-24hr">
+      <div class="annotation-card">
+        <span class="tag">02</span>
+        <h4>24-Hour Refund Guarantee</h4>
+        <p>First-time buyers get an automatic refund commitment within 24 hours — no original packaging required. Eliminates financial risk.</p>
+      </div>
+    </div>
+
+    <div id="anno-3" class="annotation-item" data-marker="marker-3" data-feat="feat-quality">
+      <div class="annotation-card">
+        <span class="tag">03</span>
+        <h4>Seller Quality Score</h4>
+        <p>Visual performance bar (1–5 scale) based on complaint rate, return rate, and delivery speed. Transparent seller accountability.</p>
+      </div>
+    </div>
+
+    <div id="anno-4" class="annotation-item" data-marker="marker-4" data-feat="feat-accuracy">
+      <div class="annotation-card">
+        <span class="tag">04</span>
+        <h4>Listing Accuracy Indicator</h4>
+        <p>AI-generated confidence score showing whether product photos match actual items. Flags potential mismatches before purchase.</p>
+      </div>
+    </div>
+
+    <div id="anno-5" class="annotation-item" data-marker="marker-5" data-feat="feat-seller">
+      <div class="annotation-card">
+        <span class="tag">05</span>
+        <h4>Verified Seller Information</h4>
+        <p>Detailed seller profile with feedback score, total sales, response time, and Verified badge — all in one card for informed decisions.</p>
+      </div>
+    </div>
+
+    <div id="anno-6" class="annotation-item" data-marker="marker-6" data-feat="feat-product">
+      <div class="annotation-card">
+        <span class="tag">06</span>
+        <h4>Product Details &amp; Pricing</h4>
+        <p>Clear product title, competitive pricing with BDT currency, and seller attribution. Clean hierarchy for quick scanning.</p>
+      </div>
+    </div>
+
+    <div id="anno-7" class="annotation-item" data-marker="marker-7" data-feat="feat-buttons">
+      <div class="annotation-card">
+        <span class="tag">07</span>
+        <h4>Action Buttons (Primary &amp; Secondary)</h4>
+        <p>Dual CTA layout: primary "Add to Cart" for conversion, secondary "Visit Store" for exploration. Orange color drives attention.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="proto-label">
+  TrustGuard Prototype · Daraz Case Study 2026
+</div>
+
+<script>
+  const markerFeatMap = {};
+
+  function initFeatureMap() {
+    document.querySelectorAll('.fm').forEach(m => {
+      const featId = m.dataset.feat;
+      const annoId = m.dataset.anno;
+      markerFeatMap[m.id] = { feat: document.getElementById(featId), anno: document.getElementById(annoId), marker: m };
+    });
+  }
+
+  function positionMarkers() {
+    const wrapper = document.getElementById('phone-wrapper');
+    const wrapperRect = wrapper.getBoundingClientRect();
+
+    Object.values(markerFeatMap).forEach(({ feat, marker }) => {
+      if (!feat) return;
+      const featRect = feat.getBoundingClientRect();
+      const markerCenter = (featRect.top + featRect.height / 2) - wrapperRect.top;
+      marker.style.top = (markerCenter - 17) + 'px';
+      marker.style.left = '';
+      marker.style.right = '';
+      if (marker.classList.contains('fm-r')) {
+        marker.style.right = '-17px';
+      } else {
+        marker.style.left = '-17px';
+      }
+    });
+  }
+
+  function clearActive() {
+    document.querySelectorAll('.fm.active').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.annotation-item.active').forEach(a => a.classList.remove('active'));
+  }
+
+  function highlightMarker(markerId) {
+    clearActive();
+    const marker = document.getElementById(markerId);
+    if (!marker) return;
+    marker.classList.add('active');
+    const annoId = marker.dataset.anno;
+    const anno = document.getElementById(annoId);
+    if (anno) anno.classList.add('active');
+  }
+
+  function highlightAnnotation(annoId) {
+    clearActive();
+    const anno = document.getElementById(annoId);
+    if (!anno) return;
+    anno.classList.add('active');
+    const markerId = anno.dataset.marker;
+    const marker = document.getElementById(markerId);
+    if (marker) marker.classList.add('active');
+  }
+
+  function scrollToFeature(featId) {
+    const feat = document.getElementById(featId);
+    if (!feat) return;
+    const wrap = document.getElementById('screen-wrap');
+    const wrapRect = wrap.getBoundingClientRect();
+    const featRect = feat.getBoundingClientRect();
+    const offset = featRect.top - wrapRect.top - 60;
+    wrap.scrollTo({ top: wrap.scrollTop + offset, behavior: 'smooth' });
+  }
+
+  // Hover handlers
+  document.querySelectorAll('.fm').forEach(m => {
+    m.addEventListener('mouseenter', function() {
+      highlightMarker(this.id);
+    });
+    m.addEventListener('mouseleave', clearActive);
+    m.addEventListener('click', function() {
+      scrollToFeature(this.dataset.feat);
+    });
+  });
+
+  document.querySelectorAll('.annotation-item').forEach(a => {
+    a.addEventListener('mouseenter', function() {
+      highlightAnnotation(this.id);
+    });
+    a.addEventListener('mouseleave', clearActive);
+    a.addEventListener('click', function() {
+      scrollToFeature(this.dataset.feat);
+    });
+  });
+
+  // Re-position on load and resize
+  window.addEventListener('load', function() {
+    initFeatureMap();
+    positionMarkers();
+  });
+  window.addEventListener('resize', positionMarkers);
+
+  function showToast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2000);
+  }
+</script>
+</body>
+</html>

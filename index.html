@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daraz Case Study – Prototypes</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #F85606;
+    --orange-light: #FFF0E8;
+    --orange-mid: #FFD6B8;
+    --green: #0AA740;
+    --gold: #F59E0B;
+    --dark: #1A1A2E;
+    --gray-100: #F5F5F5;
+    --gray-200: #EBEBEB;
+    --gray-400: #AAAAAA;
+    --gray-600: #666666;
+    --gray-800: #333333;
+    --white: #FFFFFF;
+    --font: 'Nunito', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: linear-gradient(135deg, #E8E8E8 0%, #D5D5D5 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header .logo {
+    display: inline-block;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 20px;
+    padding: 4px 14px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 6px;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--gray-600);
+    max-width: 480px;
+    line-height: 1.6;
+  }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+    max-width: 1000px;
+  }
+
+  .card {
+    width: 300px;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.14);
+  }
+
+  .card .banner {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card .banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.06) 100%);
+  }
+
+  .card .banner.reconnect { background: linear-gradient(135deg, #FFF0E8, #FFD6B8); }
+  .card .banner.trustguard { background: linear-gradient(135deg, #E6F7EC, #B8EDCA); }
+  .card .banner.darazplus { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+
+  .card .body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .card .body .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    width: fit-content;
+  }
+  .card .body .tag.reconnect { background: var(--orange-light); color: var(--orange); }
+  .card .body .tag.trustguard { background: var(--green-light); color: var(--green); }
+  .card .body .tag.darazplus { background: var(--gold); color: #fff; }
+
+  .card .body h2 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 6px;
+  }
+  .card .body p {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.5;
+    flex: 1;
+    margin-bottom: 14px;
+  }
+  .card .body .meta {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--gray-400);
+    border-top: 1px solid var(--gray-200);
+    padding-top: 12px;
+    margin-top: auto;
+  }
+  .card .body .meta span { display: flex; align-items: center; gap: 4px; }
+
+  .footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+  .footer a {
+    color: var(--orange);
+    text-decoration: none;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">daraz</div>
+  <h1>Retention &amp; Engagement Prototypes</h1>
+  <p>A collection of interactive prototypes demonstrating Daraz's post-purchase retention strategy — built for Product Peers BD Case Competition 2.0</p>
+</div>
+
+<div class="grid">
+
+  <a class="card" href="daraz_reconnect_prototype.html" target="_blank">
+    <div class="banner reconnect">📦</div>
+    <div class="body">
+      <span class="tag reconnect">POST-PURCHASE FLOW</span>
+      <h2>ReConnect</h2>
+      <p>Post-delivery NPS capture with branching journeys — rescue flow for detractors (scores 1–6) and loyalty journey for promoters (scores 9–10). Includes live CS agent connection and personalised recommendations.</p>
+      <div class="meta">
+        <span>🔄 6 screens</span>
+        <span>📊 NPS + Rescue</span>
+        <span>📱 Mobile UI</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="trustguard_prototype.html" target="_blank">
+    <div class="banner trustguard">🛡️</div>
+    <div class="body">
+      <span class="tag trustguard">BUYER PROTECTION</span>
+      <h2>TrustGuard</h2>
+      <p>Product detail page with seller trust signals — TrustGuard badge, 24-hour refund guarantee, seller quality score, listing accuracy indicator, and verified seller information with performance stats.</p>
+      <div class="meta">
+        <span>🛡️ 7 features</span>
+        <span>📊 Quality Score</span>
+        <span>🏪 Verified Seller</span>
+      </div>
+    </div>
+  </a>
+
+  <a class="card" href="daraz_plus_prototype.html" target="_blank">
+    <div class="banner darazplus">⭐</div>
+    <div class="body">
+      <span class="tag darazplus">LOYALTY SUBSCRIPTION</span>
+      <h2>Daraz Plus</h2>
+      <p>Subscription journey with pricing toggle (monthly/yearly), free trial activation, member dashboard with savings tracker and streak, exclusive deals with live countdown, and full benefits comparison.</p>
+      <div class="meta">
+        <span>⭐ 5 screens</span>
+        <span>💰 ৳99/month</span>
+        <span>🔥 Streak tracker</span>
+      </div>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer">
+  Daraz Case Study 2026 · <a href="Daraz_Supporting_Document.md" target="_blank">View Supporting Document</a>
+</div>
+
+</body>
+</html>

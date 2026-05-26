@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daraz – ReConnect Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #F85606;
+    --orange-light: #FFF0E8;
+    --orange-mid: #FFD6B8;
+    --green: #0AA740;
+    --green-light: #E6F7EC;
+    --red: #E02020;
+    --red-light: #FDEAEA;
+    --gray-100: #F5F5F5;
+    --gray-200: #EBEBEB;
+    --gray-400: #AAAAAA;
+    --gray-600: #666666;
+    --gray-800: #333333;
+    --white: #FFFFFF;
+    --font: 'Nunito', sans-serif;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font);
+    background: #E8E8E8;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0 40px;
+  }
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 375px;
+    min-height: 812px;
+    background: var(--gray-100);
+    border-radius: 36px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    background: var(--orange);
+    padding: 10px 20px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 12px; color: #fff; font-weight: 700; }
+  .status-bar .icons { display: flex; gap: 6px; align-items: center; }
+  .status-bar .icons span { font-size: 11px; color: #fff; }
+
+  /* ── Top nav ── */
+  .nav {
+    background: var(--orange);
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .nav .back { color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+  .nav .brand { display: flex; align-items: center; gap: 8px; }
+  .nav .brand-logo {
+    background: #fff;
+    color: var(--orange);
+    font-weight: 800;
+    font-size: 15px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .nav .page-title { color: #fff; font-size: 15px; font-weight: 700; }
+
+  /* ── Scrollable content ── */
+  .screen-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background: var(--gray-100);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(30px);
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .screen.exit-left {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  /* ── Shared card ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin: 12px 14px;
+    padding: 16px;
+  }
+
+  /* ── Step indicator ── */
+  .step-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 10px 14px 4px;
+  }
+  .step-dot {
+    width: 28px; height: 6px;
+    border-radius: 4px;
+    background: var(--gray-200);
+    flex: 1;
+    margin: 0 3px;
+    transition: background 0.3s;
+  }
+  .step-dot.done { background: var(--orange); }
+
+  /* ── Order delivered card (Screen 1) ── */
+  .order-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--green-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  .order-status-badge .checkmark {
+    width: 32px; height: 32px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; color: #fff; flex-shrink: 0;
+  }
+  .order-status-badge .status-text .label { font-size: 13px; color: var(--green); font-weight: 800; }
+  .order-status-badge .status-text .sub { font-size: 11.5px; color: var(--gray-600); margin-top: 1px; }
+
+  .product-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .product-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .product-img {
+    width: 58px; height: 58px;
+    border-radius: 6px;
+    background: var(--gray-100);
+    object-fit: cover;
+    border: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; flex-shrink: 0;
+  }
+  .product-info .name { font-size: 13px; font-weight: 700; color: var(--gray-800); line-height: 1.35; }
+  .product-info .detail { font-size: 11.5px; color: var(--gray-400); margin-top: 3px; }
+  .product-info .price { font-size: 14px; font-weight: 800; color: var(--orange); margin-top: 4px; }
+
+  .delivery-meta {
+    background: var(--gray-100);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    display: flex;
+    gap: 18px;
+  }
+  .delivery-meta .meta-item .label { font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.4px; }
+  .delivery-meta .meta-item .val { font-size: 12.5px; font-weight: 700; color: var(--gray-800); margin-top: 2px; }
+
+  /* ── NPS Screen (Screen 2) ── */
+  .nps-intro {
+    text-align: center;
+    padding: 8px 4px 14px;
+  }
+  .nps-intro .emoji { font-size: 40px; margin-bottom: 8px; }
+  .nps-intro h2 { font-size: 17px; font-weight: 800; color: var(--gray-800); line-height: 1.3; }
+  .nps-intro p { font-size: 13px; color: var(--gray-600); margin-top: 6px; line-height: 1.5; }
+
+  .nps-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 7px;
+    margin: 6px 0 10px;
+  }
+  .nps-btn {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 2px solid var(--gray-200);
+    background: var(--white);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font);
+  }
+  .nps-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .nps-btn.selected { background: var(--orange); border-color: var(--orange); color: #fff; transform: scale(1.08); }
+  .nps-btn.red-zone { border-color: #FFCDC0; }
+  .nps-btn.red-zone.selected { background: var(--red); border-color: var(--red); }
+  .nps-btn.yellow-zone { border-color: #FFF0C0; }
+  .nps-btn.yellow-zone.selected { background: #F5A623; border-color: #F5A623; }
+  .nps-btn.green-zone { border-color: #B8EDCA; }
+  .nps-btn.green-zone.selected { background: var(--green); border-color: var(--green); }
+
+  .nps-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .nps-labels span { font-size: 10.5px; color: var(--gray-400); }
+
+  /* ── Rescue Screen (Screen 3A) ── */
+  .rescue-header {
+    text-align: center;
+    padding: 6px 4px 14px;
+  }
+  .rescue-header .icon { font-size: 38px; margin-bottom: 8px; }
+  .rescue-header h2 { font-size: 17px; font-weight: 800; color: var(--gray-800); }
+  .rescue-header p { font-size: 13px; color: var(--gray-600); margin-top: 5px; line-height: 1.5; }
+
+  .issue-option {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 14px;
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 2px solid var(--gray-200);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .issue-option:hover { border-color: var(--orange); background: var(--orange-light); }
+  .issue-option.selected { border-color: var(--orange); background: var(--orange-light); }
+  .issue-option .issue-icon { font-size: 26px; flex-shrink: 0; }
+  .issue-option .issue-text .title { font-size: 14px; font-weight: 700; color: var(--gray-800); }
+  .issue-option .issue-text .sub { font-size: 12px; color: var(--gray-600); margin-top: 2px; }
+  .issue-option .arrow { margin-left: auto; color: var(--gray-400); font-size: 18px; }
+
+  /* ── Rescue Confirmation (Screen 3B) ── */
+  .rescue-confirm {
+    text-align: center;
+    padding: 10px 0 14px;
+  }
+  .rescue-confirm .big-icon { font-size: 52px; margin-bottom: 10px; }
+  .rescue-confirm h2 { font-size: 18px; font-weight: 800; color: var(--gray-800); }
+  .rescue-confirm p { font-size: 13px; color: var(--gray-600); margin-top: 6px; line-height: 1.55; }
+
+  .guarantee-badge {
+    background: linear-gradient(135deg, var(--orange-light) 0%, #FFE8D0 100%);
+    border: 1.5px solid var(--orange-mid);
+    border-radius: 10px;
+    padding: 14px;
+    margin: 12px 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    text-align: left;
+  }
+  .guarantee-badge .g-icon { font-size: 28px; flex-shrink: 0; }
+  .guarantee-badge .g-text .title { font-size: 13.5px; font-weight: 800; color: var(--orange); }
+  .guarantee-badge .g-text .sub { font-size: 12px; color: var(--gray-600); margin-top: 3px; line-height: 1.4; }
+
+  .timeline {
+    text-align: left;
+    margin: 10px 0;
+  }
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 15px; top: 28px;
+    width: 2px; height: calc(100% + 6px);
+    background: var(--gray-200);
+  }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-dot {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--orange);
+    color: #fff;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; z-index: 1;
+  }
+  .timeline-content .step-label { font-size: 12px; font-weight: 800; color: var(--gray-800); }
+  .timeline-content .step-desc { font-size: 11.5px; color: var(--gray-600); margin-top: 2px; line-height: 1.4; }
+
+  /* ── Promoter Screen (Screen 4) ── */
+  .promoter-header {
+    text-align: center;
+    padding: 6px 4px 12px;
+  }
+  .promoter-header .big-icon { font-size: 44px; margin-bottom: 8px; }
+  .promoter-header h2 { font-size: 17px; font-weight: 800; color: var(--gray-800); }
+  .promoter-header p { font-size: 13px; color: var(--gray-600); margin-top: 5px; }
+
+  .reward-banner {
+    background: linear-gradient(135deg, #FFF7E6, #FFE8C0);
+    border: 1.5px solid #FFCF7D;
+    border-radius: 10px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .reward-banner .r-icon { font-size: 28px; flex-shrink: 0; }
+  .reward-banner .r-text .title { font-size: 13px; font-weight: 800; color: #B45309; }
+  .reward-banner .r-text .sub { font-size: 12px; color: #92400E; margin-top: 2px; }
+
+  .rec-section-title {
+    font-size: 13px; font-weight: 800; color: var(--gray-800);
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .rec-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+    margin: 0 -14px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .rec-scroll::-webkit-scrollbar { display: none; }
+
+  .rec-card {
+    background: var(--white);
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+    padding: 10px;
+    min-width: 130px;
+    max-width: 130px;
+    cursor: pointer;
+    transition: box-shadow 0.18s;
+    flex-shrink: 0;
+  }
+  .rec-card:hover { box-shadow: 0 4px 16px rgba(248,86,6,0.15); }
+  .rec-card .rec-img { font-size: 30px; text-align: center; padding: 8px 0; }
+  .rec-card .rec-name { font-size: 11.5px; font-weight: 700; color: var(--gray-800); line-height: 1.3; }
+  .rec-card .rec-price { font-size: 13px; font-weight: 800; color: var(--orange); margin-top: 4px; }
+  .rec-card .rec-discount { font-size: 10px; color: var(--gray-400); text-decoration: line-through; }
+
+  .plus-upsell {
+    background: linear-gradient(135deg, #1A1A2E 0%, #2D2D4E 100%);
+    border-radius: 10px;
+    padding: 16px 14px;
+    color: #fff;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 8px 0;
+    cursor: pointer;
+  }
+  .plus-upsell .p-icon { font-size: 28px; flex-shrink: 0; }
+  .plus-upsell .p-text .title { font-size: 14px; font-weight: 800; color: #fff; }
+  .plus-upsell .p-text .sub { font-size: 11.5px; color: #AAB; margin-top: 3px; line-height: 1.4; }
+  .plus-upsell .p-cta {
+    margin-left: auto;
+    background: var(--orange);
+    color: #fff;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 11px; font-weight: 800;
+    white-space: nowrap; flex-shrink: 0;
+    font-family: var(--font);
+  }
+
+  /* ── Shared buttons ── */
+  .btn-primary {
+    width: 100%;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background 0.18s, transform 0.12s;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { background: #D94A04; }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-secondary {
+    width: 100%;
+    background: transparent;
+    color: var(--orange);
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.18s;
+    margin-top: 8px;
+  }
+  .btn-secondary:hover { background: var(--orange-light); }
+
+  .btn-ghost {
+    width: 100%;
+    background: transparent;
+    color: var(--gray-600);
+    border: none;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font);
+    text-decoration: underline;
+    margin-top: 4px;
+  }
+
+  /* ── Bottom padding ── */
+  .pb { height: 20px; }
+
+  /* ── Prototype label ── */
+  .proto-label {
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    margin-top: 14px;
+    font-family: var(--font);
+    letter-spacing: 0.4px;
+  }
+
+  /* ── Flow nav dots (outside phone) ── */
+  .flow-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    right: calc(50% - 245px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .flow-nav-btn {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #ccc;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .flow-nav-btn.active { background: var(--orange); transform: scale(1.4); }
+
+  @media (max-width: 700px) { .flow-nav { display: none; } }
+
+  /* ── Tag for prototype callout ── */
+  .callout {
+    background: #1A1A2E;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    margin: 8px 14px 0;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .callout .tag {
+    background: var(--orange);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Feedback sent screen ── */
+  .sent-screen {
+    text-align: center;
+    padding: 20px 10px 10px;
+  }
+  .sent-screen .big-icon { font-size: 56px; margin-bottom: 12px; }
+  .sent-screen h2 { font-size: 20px; font-weight: 800; color: var(--gray-800); }
+  .sent-screen p { font-size: 13px; color: var(--gray-600); margin-top: 6px; line-height: 1.6; }
+  .sent-screen .timer { font-size: 13px; font-weight: 800; color: var(--orange); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <span>●●●</span>
+      <span>WiFi</span>
+      <span>🔋</span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <span class="back" onclick="goBack()">&#8592;</span>
+    <div class="brand">
+      <span class="brand-logo">daraz</span>
+      <span class="page-title" id="nav-title">My Orders</span>
+    </div>
+  </div>
+
+  <!-- Step bar -->
+  <div class="step-bar" id="step-bar">
+    <div class="step-dot" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+    <div class="step-dot" id="dot-4"></div>
+  </div>
+
+  <!-- Screen wrap -->
+  <div class="screen-wrap">
+
+    <!-- ── SCREEN 1: Order Delivered ── -->
+    <div class="screen active" id="screen-1">
+
+      <div class="callout">
+        <span class="tag">RECONNECT</span>
+        This notification arrives 2 hours after delivery confirmation. It's the entry point of the ReConnect post-purchase flow.
+      </div>
+
+      <div class="card">
+        <div class="order-status-badge">
+          <div class="checkmark">✓</div>
+          <div class="status-text">
+            <div class="label">ORDER DELIVERED</div>
+            <div class="sub">Today, 9:15 AM · Delivered to your address</div>
+          </div>
+        </div>
+
+        <div class="product-row">
+          <div class="product-img">👟</div>
+          <div class="product-info">
+            <div class="name">Nike Air Max 270 React — Size 42</div>
+            <div class="detail">Sold by: Sports World BD</div>
+            <div class="price">৳ 4,299</div>
+          </div>
+        </div>
+
+        <div class="product-row">
+          <div class="product-img">🎧</div>
+          <div class="product-info">
+            <div class="name">Wireless Earbuds Pro X100</div>
+            <div class="detail">Sold by: TechZone Official</div>
+            <div class="price">৳ 1,150</div>
+          </div>
+        </div>
+
+        <div class="delivery-meta">
+          <div class="meta-item">
+            <div class="label">Order ID</div>
+            <div class="val">#DBD-2026-883</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">Payment</div>
+            <div class="val">Cash on Delivery</div>
+          </div>
+          <div class="meta-item">
+            <div class="label">Total</div>
+            <div class="val">৳ 5,449</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:14px;font-weight:800;color:var(--gray-800);margin-bottom:6px;">How was your experience?</div>
+        <div style="font-size:12.5px;color:var(--gray-600);margin-bottom:12px;line-height:1.5;">Did everything arrive as expected? Your feedback helps us improve.</div>
+        <button class="btn-primary" onclick="goTo(2)">Rate This Order →</button>
+        <button class="btn-ghost" onclick="goTo(2)">Maybe later</button>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- ── SCREEN 2: NPS Rating ── -->
+    <div class="screen" id="screen-2">
+
+      <div class="callout">
+        <span class="tag">NPS CAPTURE</span>
+        Score 1–6 routes to the Rescue Flow. Score 7–8 to a light nudge. Score 9–10 to the Loyalty Journey.
+      </div>
+
+      <div class="card">
+        <div class="nps-intro">
+          <div class="emoji">📦</div>
+          <h2>How satisfied are you with your order?</h2>
+          <p>Based on what you received — quality, accuracy, and delivery experience.</p>
+        </div>
+
+        <div class="nps-grid" id="nps-grid">
+          <button class="nps-btn red-zone"    data-score="1" onclick="selectNPS(1)">1</button>
+          <button class="nps-btn red-zone"    data-score="2" onclick="selectNPS(2)">2</button>
+          <button class="nps-btn red-zone"    data-score="3" onclick="selectNPS(3)">3</button>
+          <button class="nps-btn red-zone"    data-score="4" onclick="selectNPS(4)">4</button>
+          <button class="nps-btn red-zone"    data-score="5" onclick="selectNPS(5)">5</button>
+          <button class="nps-btn yellow-zone" data-score="6" onclick="selectNPS(6)">6</button>
+          <button class="nps-btn yellow-zone" data-score="7" onclick="selectNPS(7)">7</button>
+          <button class="nps-btn yellow-zone" data-score="8" onclick="selectNPS(8)">8</button>
+          <button class="nps-btn green-zone"  data-score="9" onclick="selectNPS(9)">9</button>
+          <button class="nps-btn green-zone"  data-score="10" onclick="selectNPS(10)">10</button>
+        </div>
+
+        <div class="nps-labels">
+          <span>😞 Not at all</span>
+          <span>Extremely satisfied 😄</span>
+        </div>
+
+        <button class="btn-primary" id="nps-next-btn" onclick="submitNPS()" style="opacity:0.4;pointer-events:none;">Submit Rating</button>
+        <button class="btn-ghost" onclick="goTo(1)">← Back</button>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- ── SCREEN 3A: Rescue — Issue Selection ── -->
+    <div class="screen" id="screen-3a">
+
+      <div class="callout">
+        <span class="tag">RESCUE FLOW</span>
+        Triggered for NPS scores 1–6. Buyer selects issue type → connects to a live CS agent with automatic refund pre-authorization.
+      </div>
+
+      <div class="card">
+        <div class="rescue-header">
+          <div class="icon">😟</div>
+          <h2>We're sorry to hear that</h2>
+          <p>Tell us what went wrong and we'll fix it immediately. Your First Order is protected.</p>
+        </div>
+
+        <div class="issue-option" onclick="selectIssue(this, 'wrong')">
+          <div class="issue-icon">🔄</div>
+          <div class="issue-text">
+            <div class="title">Wrong or different product</div>
+            <div class="sub">Product doesn't match what was shown</div>
+          </div>
+          <span class="arrow">›</span>
+        </div>
+
+        <div class="issue-option" onclick="selectIssue(this, 'fake')">
+          <div class="issue-icon">⚠️</div>
+          <div class="issue-text">
+            <div class="title">Fake or counterfeit product</div>
+            <div class="sub">Quality or branding looks suspicious</div>
+          </div>
+          <span class="arrow">›</span>
+        </div>
+
+        <div class="issue-option" onclick="selectIssue(this, 'damaged')">
+          <div class="issue-icon">📦</div>
+          <div class="issue-text">
+            <div class="title">Damaged or broken item</div>
+            <div class="sub">Item arrived in poor condition</div>
+          </div>
+          <span class="arrow">›</span>
+        </div>
+
+        <div class="issue-option" onclick="selectIssue(this, 'missing')">
+          <div class="issue-icon">🔍</div>
+          <div class="issue-text">
+            <div class="title">Item missing from package</div>
+            <div class="sub">Package was incomplete</div>
+          </div>
+          <span class="arrow">›</span>
+        </div>
+
+        <button class="btn-ghost" onclick="goTo(2)">← Back</button>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- ── SCREEN 3B: Rescue — Guarantee Confirmation ── -->
+    <div class="screen" id="screen-3b">
+
+      <div class="callout">
+        <span class="tag">TRUSTGUARD</span>
+        The 24-hr First Order Guarantee activates automatically. No original packaging needed. CS is notified with buyer's issue type pre-filled.
+      </div>
+
+      <div class="card">
+        <div class="rescue-confirm">
+          <div class="big-icon">🛡️</div>
+          <h2>Your order is protected</h2>
+          <p>You're eligible for our <strong>First Order 24-Hour Guarantee</strong>. We've pre-authorized your refund.</p>
+        </div>
+
+        <div class="guarantee-badge">
+          <div class="g-icon">⚡</div>
+          <div class="g-text">
+            <div class="title">24-Hour Refund Guarantee</div>
+            <div class="sub">No original packaging needed. Refund processed directly to your mobile wallet within 24 hours of CS resolution.</div>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot">1</div>
+            <div class="timeline-content">
+              <div class="step-label">Live CS agent assigned — now</div>
+              <div class="step-desc">A trained agent (not a bot) will contact you within 15 minutes</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot">2</div>
+            <div class="timeline-content">
+              <div class="step-label">Quick photo verification</div>
+              <div class="step-desc">Agent will ask for 1–2 photos of the item via in-app chat</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot">3</div>
+            <div class="timeline-content">
+              <div class="step-label">Refund issued within 24 hours</div>
+              <div class="step-desc">Full refund to bKash/Nagad or bank. Seller is held accountable.</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="goTo('sent')">Connect to CS Agent →</button>
+        <button class="btn-ghost" onclick="goTo('3a')">← Change issue type</button>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- ── SCREEN 4: Promoter — Loyalty Journey ── -->
+    <div class="screen" id="screen-4">
+
+      <div class="callout">
+        <span class="tag">LOYALTY JOURNEY</span>
+        Triggered for NPS 9–10. Rewards the happy buyer, drives UGC, upsells recommendations and Daraz Plus subscription.
+      </div>
+
+      <div class="card">
+        <div class="promoter-header">
+          <div class="big-icon">🎉</div>
+          <h2>You made a great pick!</h2>
+          <p style="color:var(--green);font-weight:700;">NPS 9 — Thank you for the great rating</p>
+        </div>
+
+        <div class="reward-banner">
+          <div class="r-icon">🎁</div>
+          <div class="r-text">
+            <div class="title">Share a photo → get ৳50 off</div>
+            <div class="sub">Post a photo of your order on your profile and earn a coupon for your next purchase.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:4px;">
+          <div class="rec-section-title">You might also love these</div>
+          <div class="rec-scroll">
+            <div class="rec-card">
+              <div class="rec-img">🎒</div>
+              <div class="rec-name">Sports Backpack Pro</div>
+              <div class="rec-price">৳ 1,299</div>
+              <div class="rec-discount">৳ 1,800</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-img">🧢</div>
+              <div class="rec-name">Nike Cap — Adjustable</div>
+              <div class="rec-price">৳ 649</div>
+              <div class="rec-discount">৳ 950</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-img">🔌</div>
+              <div class="rec-name">USB-C Fast Charger 65W</div>
+              <div class="rec-price">৳ 420</div>
+              <div class="rec-discount">৳ 680</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-img">👕</div>
+              <div class="rec-name">Dry-Fit Sports Tee</div>
+              <div class="rec-price">৳ 399</div>
+              <div class="rec-discount">৳ 599</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="plus-upsell" style="margin-top:14px;" onclick="goTo('plus')">
+          <div class="p-icon">⭐</div>
+          <div class="p-text">
+            <div class="title">Try Daraz Plus Free</div>
+            <div class="sub">Free delivery + 21-day returns + priority support. First 30 days on us.</div>
+          </div>
+          <div class="p-cta">Try Free →</div>
+        </div>
+
+        <button class="btn-primary" style="margin-top:14px;" onclick="goTo('sent')">Done →</button>
+      </div>
+
+      <div class="pb"></div>
+    </div>
+
+    <!-- ── SCREEN SENT ── -->
+    <div class="screen" id="screen-sent">
+      <div class="card" style="margin-top:30px;">
+        <div class="sent-screen">
+          <div class="big-icon" id="sent-icon">✅</div>
+          <h2 id="sent-title">All done!</h2>
+          <p id="sent-desc">Your feedback has been recorded. Thank you for helping us improve Daraz.</p>
+          <div class="timer" id="sent-timer"></div>
+        </div>
+        <button class="btn-primary" onclick="restart()">Back to Orders</button>
+        <button class="btn-ghost" onclick="restart()">Return to Start</button>
+      </div>
+      <div class="pb"></div>
+    </div>
+
+    <!-- ── SCREEN: Daraz Plus ── -->
+    <div class="screen" id="screen-plus">
+      <div class="callout">
+        <span class="tag">DARAZ PLUS</span>
+        Shown to Promoter-journey buyers at T+30d or via direct upsell. First 30 days free to reduce friction.
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:44px;margin-bottom:8px;">⭐</div>
+        <div style="font-size:19px;font-weight:800;color:var(--gray-800);margin-bottom:4px;">Daraz Plus</div>
+        <div style="font-size:13px;color:var(--gray-600);margin-bottom:14px;">Your smartest shopping upgrade</div>
+
+        <div style="background:var(--gray-100);border-radius:10px;padding:14px;text-align:left;margin-bottom:12px;">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">🚚</span><span style="font-size:13px;font-weight:700;color:var(--gray-800);">Free delivery on every order</span></div>
+            <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">↩️</span><span style="font-size:13px;font-weight:700;color:var(--gray-800);">21-day hassle-free returns</span></div>
+            <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">🎧</span><span style="font-size:13px;font-weight:700;color:var(--gray-800);">Priority customer support (&lt; 2hr SLA)</span></div>
+            <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:18px;">🏷️</span><span style="font-size:13px;font-weight:700;color:var(--gray-800);">Exclusive member-only weekly deals</span></div>
+          </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg,var(--orange-light),#FFE0C8);border-radius:10px;padding:14px;margin-bottom:12px;">
+          <div style="font-size:26px;font-weight:800;color:var(--orange);">FREE for 30 days</div>
+          <div style="font-size:13px;color:var(--gray-600);margin-top:4px;">Then only ৳99/month. Cancel anytime.</div>
+        </div>
+
+        <button class="btn-primary" onclick="goTo('sent')">Start Free Trial →</button>
+        <button class="btn-ghost" onclick="goTo(4)">← Back</button>
+      </div>
+      <div class="pb"></div>
+    </div>
+
+  </div><!-- end screen-wrap -->
+</div><!-- end phone -->
+
+<div class="proto-label">
+  ReConnect Prototype · Daraz Case Study 2026<br>
+  Click through to simulate the full post-purchase flow
+</div>
+
+<!-- Side nav dots -->
+<nav class="flow-nav" id="flow-nav">
+  <button class="flow-nav-btn active" id="nav-1" title="Order Delivered" onclick="goTo(1)"></button>
+  <button class="flow-nav-btn" id="nav-2" title="NPS Rating" onclick="goTo(2)"></button>
+  <button class="flow-nav-btn" id="nav-3a" title="Issue Selection" onclick="goTo('3a')"></button>
+  <button class="flow-nav-btn" id="nav-3b" title="Rescue Confirm" onclick="goTo('3b')"></button>
+  <button class="flow-nav-btn" id="nav-4" title="Loyalty Journey" onclick="goTo(4)"></button>
+</nav>
+
+<script>
+  let currentScreen = '1';
+  let selectedNPS = null;
+  let isRescueFlow = false;
+
+  const screenHistory = [];
+
+  function goTo(id) {
+    const idStr = String(id);
+
+    // exit current
+    const curr = document.getElementById('screen-' + currentScreen);
+    if (curr) {
+      curr.classList.remove('active');
+      curr.classList.add('exit-left');
+      setTimeout(() => curr.classList.remove('exit-left'), 350);
+    }
+
+    // enter new
+    const next = document.getElementById('screen-' + idStr);
+    if (next) {
+      next.classList.add('active');
+    }
+
+    screenHistory.push(currentScreen);
+    currentScreen = idStr;
+    updateNav(idStr);
+  }
+
+  function goBack() {
+    if (screenHistory.length === 0) return;
+    const prev = screenHistory.pop();
+    const curr = document.getElementById('screen-' + currentScreen);
+    if (curr) {
+      curr.classList.remove('active');
+      setTimeout(() => curr.classList.remove('exit-left'), 350);
+    }
+    const prevEl = document.getElementById('screen-' + prev);
+    if (prevEl) prevEl.classList.add('active');
+    currentScreen = prev;
+    updateNav(prev);
+  }
+
+  function updateNav(id) {
+    // title
+    const titles = {
+      '1': 'My Orders',
+      '2': 'Rate Order',
+      '3a': 'Report Issue',
+      '3b': 'Your Protection',
+      '4': 'Thank You!',
+      'sent': 'Done',
+      'plus': 'Daraz Plus'
+    };
+    document.getElementById('nav-title').textContent = titles[id] || 'Daraz';
+
+    // step dots
+    const steps = { '1': 1, '2': 2, '3a': 3, '3b': 3, '4': 3, 'sent': 4, 'plus': 4 };
+    const step = steps[id] || 1;
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('dot-' + i).classList.toggle('done', i <= step);
+    }
+
+    // side dots
+    const navIds = ['1','2','3a','3b','4'];
+    navIds.forEach(nid => {
+      const el = document.getElementById('nav-' + nid);
+      if (el) el.classList.toggle('active', nid === id);
+    });
+  }
+
+  function selectNPS(score) {
+    selectedNPS = score;
+    document.querySelectorAll('.nps-btn').forEach(btn => btn.classList.remove('selected'));
+    const btn = document.querySelector(`.nps-btn[data-score="${score}"]`);
+    if (btn) btn.classList.add('selected');
+    const nextBtn = document.getElementById('nps-next-btn');
+    nextBtn.style.opacity = '1';
+    nextBtn.style.pointerEvents = 'auto';
+  }
+
+  function submitNPS() {
+    if (!selectedNPS) return;
+    isRescueFlow = selectedNPS <= 6;
+    if (selectedNPS >= 9) {
+      // Promoter
+      goTo(4);
+    } else if (selectedNPS >= 7) {
+      // Passive — go to a gentle version, for simplicity go to promoter
+      goTo(4);
+    } else {
+      // Detractor
+      goTo('3a');
+    }
+  }
+
+  function selectIssue(el, type) {
+    document.querySelectorAll('.issue-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    setTimeout(() => goTo('3b'), 280);
+  }
+
+  function restart() {
+    // Reset
+    selectedNPS = null;
+    document.querySelectorAll('.nps-btn').forEach(btn => btn.classList.remove('selected'));
+    const nextBtn = document.getElementById('nps-next-btn');
+    nextBtn.style.opacity = '0.4';
+    nextBtn.style.pointerEvents = 'none';
+    document.querySelectorAll('.issue-option').forEach(o => o.classList.remove('selected'));
+    screenHistory.length = 0;
+
+    // Go back to screen 1
+    const curr = document.getElementById('screen-' + currentScreen);
+    if (curr) { curr.classList.remove('active'); }
+    const s1 = document.getElementById('screen-1');
+    if (s1) s1.classList.add('active');
+    currentScreen = '1';
+    updateNav('1');
+  }
+
+  // Set sent screen content based on flow
+  const origGoTo = goTo;
+  // Patch sent screen
+  const _origGoTo = window.goTo;
+  window.goTo = function(id) {
+    if (String(id) === 'sent') {
+      if (isRescueFlow) {
+        document.getElementById('sent-icon').textContent = '🛡️';
+        document.getElementById('sent-title').textContent = 'CS Agent Connected!';
+        document.getElementById('sent-desc').textContent = 'Nusrat from Daraz CS will reach out within 15 minutes. Your refund is pre-authorized and will be processed within 24 hours.';
+        document.getElementById('sent-timer').textContent = '⏱ Estimated resolution: within 24 hours';
+      } else {
+        document.getElementById('sent-icon').textContent = '🎉';
+        document.getElementById('sent-title').textContent = 'Thanks for your feedback!';
+        document.getElementById('sent-desc').textContent = 'Your ৳50 reward coupon has been added to your account. Check out your personalised deals anytime.';
+        document.getElementById('sent-timer').textContent = '🎁 Coupon added: HAPPY50 · Valid 7 days';
+      }
+    }
+    origGoTo(id);
+  };
+</script>
+</body>
+</html>
